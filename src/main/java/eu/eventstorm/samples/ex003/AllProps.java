@@ -20,9 +20,9 @@ public interface AllProps {
     void setString(String code);
 
     @Column("byte")
-    byte getByte();
+    byte getByte_();
 
-    void setByte(byte b);
+    void setByte_(byte b);
 
     @Column("o_byte")
     Byte getObjectByte();
@@ -30,9 +30,9 @@ public interface AllProps {
     void setObjectByte(Byte b);
 
     @Column("short")
-    short getShort();
+    short getShort_();
 
-    void setShort(short s);
+    void setShort_(short s);
 
     @Column("o_short")
     Short getObjectShort();
@@ -40,9 +40,9 @@ public interface AllProps {
     void setObjectShort(Short s);
 
     @Column("int")
-    int getInt();
+    int getInt_();
 
-    void setInt(int i);
+    void setInt_(int i);
 
     @Column("o_int")
     Integer getObjectInt();
@@ -50,9 +50,9 @@ public interface AllProps {
     void setObjectInt(Integer i);
 
     @Column("long")
-    long getLong();
+    long getLong_();
 
-    void setLong(long l);
+    void setLong_(long l);
 
     @Column("o_long")
     Long getObjectLong();
@@ -60,9 +60,9 @@ public interface AllProps {
     void setObjectLong(Long l);
 
     @Column("float")
-    float getFloat();
+    float getFloat_();
 
-    void setFloat(float l);
+    void setFloat_(float l);
 
     @Column("o_float")
     float getObjectFloat();
@@ -70,9 +70,9 @@ public interface AllProps {
     void setObjectFloat(float l);
 
     @Column("double")
-    double getDouble();
+    double getDouble_();
 
-    void setDouble(double l);
+    void setDouble_(double l);
 
     @Column("o_double")
     Double getObjectDouble();
@@ -80,9 +80,9 @@ public interface AllProps {
     void setObjectDouble(Double l);
 
     @Column("boolean")
-    boolean getBoolean();
+    boolean getBoolean_();
 
-    void setBoolean(boolean l);
+    void setBoolean_(boolean l);
 
     @Column("o_boolean")
     Boolean getObjectBoolean();

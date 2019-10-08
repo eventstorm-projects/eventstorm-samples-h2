@@ -1,10 +1,8 @@
-package eu.eventstorm.samples.ex005;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+package eu.eventstorm.samples.ex006;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.stream.Stream;
 
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -14,11 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
+import eu.eventstorm.sql.expression.Expressions;
 import eu.eventstorm.sql.impl.DatabaseImpl;
 import eu.eventstorm.sql.tx.Transaction;
 import eu.eventstorm.sql.tx.TransactionManagerImpl;
 
-class JoinTableTest {
+public class CollectionTest {
 
 	private JdbcConnectionPool ds;
 	private Database database;
@@ -26,7 +25,7 @@ class JoinTableTest {
 	@BeforeEach
 	void before() throws Exception {
 		ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-		database = new DatabaseImpl(ds, Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex005", ""));
+		database = new DatabaseImpl(ds, Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex006", ""));
 		Flyway flyway = Flyway.configure().dataSource(ds).load();
 		flyway.migrate();
 	}
@@ -48,54 +47,47 @@ class JoinTableTest {
 		r1.setId(1);
 		r1.setName("ROLE_ADMIN");
 
-		Role r2 = Factory.newRole();
-		r2.setId(2);
-		r2.setName("ROLE_USER");
-
 		Resource res1 = Factory.newResource();
 		res1.setId(1);
 		res1.setName("/api/1.0/{id}");
+		res1.setRoleId(r1.getId());
+		
+		Resource res2 = Factory.newResource();
+		res2.setId(2);
+		res2.setName("/api/2.0/{id}");
+		res2.setRoleId(r1.getId());
 
 		AbstractRoleRepository repository = new AbstractRoleRepository(database) {
+			
         };
 
-        AbstractResourceRepository resourceRepository = new AbstractResourceRepository(database) {
-        };
-
-        RoleResourceRepository roleResourceRepository = new RoleResourceRepository(database);
-
-        try (Transaction tx = database.transactionManager().newTransactionReadWrite()) {
-        	repository.insert(r1);
-        	repository.insert(r2);
-        	resourceRepository.insert(res1);
-        	roleResourceRepository.link(r1, res1);
-        	tx.commit();
-        }
-
-        try (Transaction tx = database.transactionManager().newTransactionReadOnly()) {
-        	RoleResource roleResource = roleResourceRepository.findById(1, 1);
-        	assertNotNull(roleResource);
-        }
+        ResourceRepository resourceRepository = new ResourceRepository(database);
         
         try (Transaction tx = database.transactionManager().newTransactionReadWrite()) {
-        	roleResourceRepository.unlink(r1, res1);
+        	repository.insert(r1);
+        	resourceRepository.insert(res1);
+        	resourceRepository.insert(res2);
         	tx.commit();
         }
 
         try (Transaction tx = database.transactionManager().newTransactionReadOnly()) {
-        	RoleResource roleResource = roleResourceRepository.findById(1, 1);
-        	assertNull(roleResource);
+        	Stream<Resource> resources = resourceRepository.findByRole(r1.getId());
+        	resources.forEach(System.out::println);
+        	tx.rollback();
         }
-
+        
 	}
+	
+	private static final class ResourceRepository extends AbstractResourceRepository {
 
-	public static class RoleResourceRepository extends AbstractRoleResourceRepository {
-
-		public RoleResourceRepository(Database database) {
+		protected ResourceRepository(Database database) {
 			super(database);
 		}
-
-
+		
+		Stream<Resource> findByRole(int roleId) {
+    		String select = select(ResourceDescriptor.ALL).from(ResourceDescriptor.TABLE).where(Expressions.eq(ResourceDescriptor.ROLE_ID)).build();
+    		return stream(select, ps -> ps.setInt(1, roleId), Mappers.RESOURCE);
+    	}
+		
 	}
-
 }
