@@ -14,9 +14,8 @@ import org.junit.jupiter.api.Test;
 import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
 import eu.eventstorm.sql.impl.DatabaseImpl;
-import eu.eventstorm.sql.tx.Transaction;
-import eu.eventstorm.sql.tx.TransactionManagerImpl;
-import eu.eventstorm.sql.type.common.BlobSqlJson;
+import eu.eventstorm.sql.impl.Transaction;
+import eu.eventstorm.sql.impl.TransactionManagerImpl;
 
 public class JsonTest {
 
@@ -26,7 +25,7 @@ public class JsonTest {
 	@BeforeEach
 	void before() throws Exception {
 		ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-		database = new DatabaseImpl(ds, Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex007", ""));
+		database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex007", ""));
 		Flyway flyway = Flyway.configure().dataSource(ds).load();
 		flyway.migrate();
 	}
@@ -47,7 +46,7 @@ public class JsonTest {
 		Span span = Factory.newSpan();
 		span.setId(1);
 		span.setName("span001");
-		span.setContent(new BlobSqlJson("{\"key\" : \"value\"}".getBytes()));
+		span.setContent(database.dialect().createJson("{\"key\" : \"value\"}".getBytes()));
 
 		AbstractSpanRepository repository = new AbstractSpanRepository(database) {
 			
@@ -61,20 +60,20 @@ public class JsonTest {
 
         try (Transaction tx = database.transactionManager().newTransactionReadOnly()) {
         	Span s = repository.findById(1);
-        	assertEquals("value", s.getContent().get("key", String.class));
+        	assertEquals("value", s.getContent().asMap().get("key", String.class));
         	tx.rollback();
         }
         
         try (Transaction tx = database.transactionManager().newTransactionReadWrite()) {
         	Span s = repository.findByIdForUpdate(1);
-        	s.getContent().put("key" , "value2");
+        	s.getContent().asMap().put("key" , "value2");
         	repository.update(s);
         	tx.commit();
         }
         
         try (Transaction tx = database.transactionManager().newTransactionReadOnly()) {
         	Span s = repository.findById(1);
-        	assertEquals("value2", s.getContent().get("key", String.class));
+        	assertEquals("value2", s.getContent().asMap().get("key", String.class));
         	tx.rollback();
         }
 	}

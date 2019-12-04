@@ -10,12 +10,11 @@ import eu.eventstorm.sql.annotation.PrimaryKey;
 import eu.eventstorm.sql.annotation.Sequence;
 import eu.eventstorm.sql.annotation.Table;
 import eu.eventstorm.sql.annotation.UpdateTimestamp;
-import eu.eventstorm.sql.id.SequenceGenerator4Long;
 
 @Table( value = "teacher", flyway = @Flyway(version = "1.0.0.002" , description = "init_schema"))
 public interface Teacher {
 
-    @PrimaryKey(value = "id", generator = SequenceGenerator4Long.class)
+    @PrimaryKey(value = "id")
     @Sequence("seq_teacher")
     long getId();
 

@@ -1,12 +1,11 @@
 package eu.eventstorm.samples.ex001;
 
 
-import static com.google.common.collect.ImmutableList.of;
 import static eu.eventstorm.samples.ex001.Factory.newStudent;
 import static eu.eventstorm.samples.ex001.StudentDescriptor.AGE;
 import static eu.eventstorm.samples.ex001.StudentDescriptor.ID;
 import static eu.eventstorm.samples.ex001.StudentDescriptor.TABLE;
-import static eu.eventstorm.sql.desc.Projections.count;
+import static eu.eventstorm.sql.expression.AggregateFunctions.count;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -24,10 +23,10 @@ import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
 import eu.eventstorm.sql.builder.Order;
 import eu.eventstorm.sql.impl.DatabaseImpl;
+import eu.eventstorm.sql.impl.Transaction;
+import eu.eventstorm.sql.impl.TransactionManagerImpl;
 import eu.eventstorm.sql.jdbc.PreparedStatementSetter;
 import eu.eventstorm.sql.jdbc.ResultSetMappers;
-import eu.eventstorm.sql.tx.Transaction;
-import eu.eventstorm.sql.tx.TransactionManagerImpl;
 
 class StudentTest {
 
@@ -37,7 +36,7 @@ class StudentTest {
     @BeforeEach
     void before() throws Exception {
         ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-        database = new DatabaseImpl(ds, Dialect.Name.H2, new TransactionManagerImpl(ds), "", new eu.eventstorm.samples.ex001.Module("ex001", ""));
+        database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new eu.eventstorm.samples.ex001.Module("ex001", ""));
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
     }
@@ -150,8 +149,8 @@ class StudentTest {
 
         protected StudentRepository(Database database) {
             super(database);
-            countAll = select(of(count(ID))).from(TABLE).build();
-            countAllGroupBy = select(of(count(ID))).from(TABLE).groupBy(AGE).orderBy(Order.asc(AGE)).build();
+            countAll = select(count(ID)).from(TABLE).build();
+            countAllGroupBy = select(count(ID)).from(TABLE).groupBy(AGE).orderBy(Order.asc(AGE)).build();
         }
 
         public long countAll() {

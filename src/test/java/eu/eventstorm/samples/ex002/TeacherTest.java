@@ -1,11 +1,10 @@
 package eu.eventstorm.samples.ex002;
 
 
-import static com.google.common.collect.ImmutableList.of;
 import static eu.eventstorm.samples.ex002.Factory.newTeacher;
 import static eu.eventstorm.samples.ex002.TeacherDescriptor.ID;
 import static eu.eventstorm.samples.ex002.TeacherDescriptor.TABLE;
-import static eu.eventstorm.sql.desc.Projections.count;
+import static eu.eventstorm.sql.expression.AggregateFunctions.count;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -20,10 +19,10 @@ import org.junit.jupiter.api.Test;
 import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
 import eu.eventstorm.sql.impl.DatabaseImpl;
+import eu.eventstorm.sql.impl.Transaction;
+import eu.eventstorm.sql.impl.TransactionManagerImpl;
 import eu.eventstorm.sql.jdbc.PreparedStatementSetter;
 import eu.eventstorm.sql.jdbc.ResultSetMappers;
-import eu.eventstorm.sql.tx.Transaction;
-import eu.eventstorm.sql.tx.TransactionManagerImpl;
 
 class TeacherTest {
 
@@ -34,7 +33,7 @@ class TeacherTest {
     @BeforeEach
     void before() {
         ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-        database = new DatabaseImpl(ds, Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex002", ""));
+        database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex002", ""));
         repository = new TeacherRepository(database);
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
@@ -131,7 +130,7 @@ class TeacherTest {
 
         protected TeacherRepository(Database database) {
             super(database);
-            countAll = select(of(count(ID))).from(TABLE).build();
+            countAll = select(count(ID)).from(TABLE).build();
         }
 
         long countAll() {

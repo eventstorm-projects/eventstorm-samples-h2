@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
 import eu.eventstorm.sql.impl.DatabaseImpl;
-import eu.eventstorm.sql.tx.Transaction;
-import eu.eventstorm.sql.tx.TransactionManagerImpl;
+import eu.eventstorm.sql.impl.Transaction;
+import eu.eventstorm.sql.impl.TransactionManagerImpl;
 
 class JoinTableTest {
 
@@ -26,7 +26,7 @@ class JoinTableTest {
 	@BeforeEach
 	void before() throws Exception {
 		ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-		database = new DatabaseImpl(ds, Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex005", ""));
+		database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex005", ""));
 		Flyway flyway = Flyway.configure().dataSource(ds).load();
 		flyway.migrate();
 	}

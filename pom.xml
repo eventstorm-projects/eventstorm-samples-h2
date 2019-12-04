@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>eu.eventstorm</groupId>
 		<artifactId>eventstorm</artifactId>
-		<version>0.1.0</version>
+		<version>0.7.0</version>
 	</parent>
 
 	<artifactId>eventstorm-samples-h2</artifactId>
@@ -24,7 +24,7 @@
 			<artifactId>eventstorm-csv</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>eu.eventstorm</groupId>
 			<artifactId>eventstorm-test</artifactId>
@@ -41,7 +41,7 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -52,7 +52,6 @@
 			<artifactId>jackson-core</artifactId>
 		</dependency>
 
-
 		<dependency>
 			<groupId>eu.eventstorm</groupId>
 			<artifactId>eventstorm-sql-apt</artifactId>
@@ -60,7 +59,75 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>eu.eventstorm</groupId>
+			<artifactId>eventstorm-core-apt</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
+
+	<dependencyManagement>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>5.2.1.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.2.1.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -89,32 +156,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- plugin>
-				<groupId>org.bsc.maven</groupId>
-				<artifactId>maven-processor-plugin</artifactId>
-				<version>3.3.3</version>
-				<executions>
-					<execution>
-						<id>process</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<processors>
-								<processor>eu.eventsotrm.sql.apt.SqlProcessor</processor>
-							</processors>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>eu.eventstorm</groupId>
-						<artifactId>eventstorm-sql-apt</artifactId>
-						<version>${project.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin-->
+			<!-- plugin> <groupId>org.bsc.maven</groupId> <artifactId>maven-processor-plugin</artifactId> <version>3.3.3</version> <executions> <execution> <id>process</id> 
+				<goals> <goal>process</goal> </goals> <phase>generate-sources</phase> <configuration> <processors> <processor>eu.eventsotrm.sql.apt.SqlProcessor</processor> </processors> 
+				</configuration> </execution> </executions> <dependencies> <dependency> <groupId>eu.eventstorm</groupId> <artifactId>eventstorm-sql-apt</artifactId> <version>${project.version}</version> 
+				</dependency> </dependencies> </plugin -->
 		</plugins>
 	</build>
 

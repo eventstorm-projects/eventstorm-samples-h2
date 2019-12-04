@@ -1,7 +1,4 @@
-package eu.eventstorm.samples.ex001;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+package eu.eventstorm.samples.ex009;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -9,6 +6,7 @@ import java.sql.Statement;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,17 +16,19 @@ import eu.eventstorm.sql.impl.DatabaseImpl;
 import eu.eventstorm.sql.impl.Transaction;
 import eu.eventstorm.sql.impl.TransactionManagerImpl;
 
-class AutoIncrementPojoTest {
+class TeacherTest {
 
     private JdbcConnectionPool ds;
     private Database database;
+    private TeacherRepository repository;
 
     @BeforeEach
-    void before() throws Exception {
+    void before() {
         ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
+        database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex008", ""));
+        repository = new TeacherRepository(database);
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
-        database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new eu.eventstorm.samples.ex001.Module("ex001", ""));
     }
 
     @AfterEach
@@ -43,24 +43,21 @@ class AutoIncrementPojoTest {
 
 
     @Test
-    void test001() throws Exception {
-
-    	AbstractAutoIncrementPojoRepository repository = new AbstractAutoIncrementPojoRepository(database) {
-        };
-
-        try (Transaction tx = database.transactionManager().newTransactionReadWrite()) {
-            AutoIncrementPojo pojo = Factory.newAutoIncrementPojo();
-            pojo.setName("Jacques");
-            repository.insert(pojo);
-            tx.commit();
-        }
-
+    void test001() {
         try (Transaction tx = database.transactionManager().newTransactionReadOnly()) {
-            AutoIncrementPojo pojo = repository.findById(1);
-            assertNotNull(pojo);
-            assertEquals("Jacques", pojo.getName());
+            ImmutableTeacher teacher = repository.findById(1);
+            Assertions.assertNotNull(teacher);
+            Assertions.assertEquals("CODE__01", teacher.getCode());
         }
-
     }
 
+
+    private static class TeacherRepository extends AbstractImmutableTeacherRepository {
+
+        protected TeacherRepository(Database database) {
+            super(database);
+        }
+ 
+    }
+   
 }
