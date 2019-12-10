@@ -13,8 +13,8 @@ import eu.eventstorm.core.id.AggregateIdGenerator;
 import eu.eventstorm.core.id.AggregateIdGeneratorManager;
 import eu.eventstorm.core.impl.AbstractCommandHandler;
 import eu.eventstorm.samples.event.ex001.command.CreateUserCommand;
-import eu.eventstorm.samples.event.ex001.event.EventFactory;
-import eu.eventstorm.samples.event.ex001.event.UserCreatedEvent;
+import eu.eventstorm.samples.event.ex001.event.EventPayloadFactory;
+import eu.eventstorm.samples.event.ex001.event.UserCreatedEventPayload;
 
 @Component
 public final class CreateUserCommandHandler extends AbstractCommandHandler<CreateUserCommand>  {
@@ -42,7 +42,7 @@ public final class CreateUserCommandHandler extends AbstractCommandHandler<Creat
 			LOGGER.debug("generate ({})", id);
 		}
 		
-		UserCreatedEvent eventData = EventFactory.newUserCreatedEvent(
+		UserCreatedEventPayload eventData = EventPayloadFactory.newUserCreatedEventPayload(
 				command.getName(),
 				command.getAge(),
 				command.getEmail()

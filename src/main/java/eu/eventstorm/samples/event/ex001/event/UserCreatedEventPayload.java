@@ -7,8 +7,8 @@ import eu.eventstorm.samples.event.ex001.domain.UserDomain;
 /**
  * @author <a href="mailto:jacques.militello@gmail.com">Jacques Militello</a>
  */
-@CqrsEventPayload(domain = UserDomain.class, key = "userCreatedEvent")
-public interface UserCreatedEvent extends EventPayload {
+@CqrsEventPayload(domain = UserDomain.class)
+public interface UserCreatedEventPayload extends EventPayload {
 
 	String getName();
 
