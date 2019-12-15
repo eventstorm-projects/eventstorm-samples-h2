@@ -21,14 +21,14 @@ import org.junit.jupiter.api.Test;
 
 import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
+import eu.eventstorm.sql.Transaction;
 import eu.eventstorm.sql.csv.CsvColumnConverters;
 import eu.eventstorm.sql.csv.CsvLine;
 import eu.eventstorm.sql.csv.CsvReader;
 import eu.eventstorm.sql.csv.CsvReaders;
 import eu.eventstorm.sql.domain.Page;
 import eu.eventstorm.sql.domain.Pageable;
-import eu.eventstorm.sql.impl.DatabaseImpl;
-import eu.eventstorm.sql.impl.Transaction;
+import eu.eventstorm.sql.impl.DatabaseBuilder;
 import eu.eventstorm.sql.impl.TransactionManagerImpl;
 
 class LoadTest {
@@ -42,7 +42,10 @@ class LoadTest {
     @BeforeEach
     void before() throws Exception {
         ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-        database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex004", ""));
+        database = DatabaseBuilder.from(Dialect.Name.H2)
+        		.withTransactionManager(new TransactionManagerImpl(ds))
+        		.withModule(new Module("ex004", ""))
+        		.build();
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
     }

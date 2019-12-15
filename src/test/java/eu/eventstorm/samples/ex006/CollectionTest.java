@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 
 import eu.eventstorm.sql.Database;
 import eu.eventstorm.sql.Dialect;
+import eu.eventstorm.sql.Transaction;
 import eu.eventstorm.sql.expression.Expressions;
-import eu.eventstorm.sql.impl.DatabaseImpl;
-import eu.eventstorm.sql.impl.Transaction;
+import eu.eventstorm.sql.impl.DatabaseBuilder;
 import eu.eventstorm.sql.impl.TransactionManagerImpl;
 
 public class CollectionTest {
@@ -25,7 +25,10 @@ public class CollectionTest {
 	@BeforeEach
 	void before() throws Exception {
 		ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "sa", "");
-		database = new DatabaseImpl(Dialect.Name.H2, new TransactionManagerImpl(ds), "", new Module("ex006", ""));
+		database = DatabaseBuilder.from(Dialect.Name.H2)
+        		.withTransactionManager(new TransactionManagerImpl(ds))
+        		.withModule(new Module("ex006", ""))
+        		.build();
 		Flyway flyway = Flyway.configure().dataSource(ds).load();
 		flyway.migrate();
 	}
