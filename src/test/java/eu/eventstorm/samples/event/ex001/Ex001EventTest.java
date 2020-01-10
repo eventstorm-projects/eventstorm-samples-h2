@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 
 import eu.eventstorm.samples.event.ex001.command.CommandFactory;
 import eu.eventstorm.samples.event.ex001.command.CreateUserCommand;
+import eu.eventstorm.samples.event.ex001.command.CreateUserCommandBuilder;
 
 @SpringBootTest(classes = Ex001Configuration.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 class Ex001EventTest {
@@ -23,10 +24,11 @@ class Ex001EventTest {
 	@Test
 	void testCommand() {
 	
-		CreateUserCommand command = CommandFactory.newCreateUserCommand();
-		command.setName("jacques");
-		command.setAge(39);
-		command.setEmail("jm@test.org");
+		CreateUserCommand command = new CreateUserCommandBuilder()
+				.withName("jacques")	
+				.withAge(39)
+				.withEmail("jm@test.org")
+				.build();
 		
 		ResponseEntity<String> value = restTemplate.postForEntity("http://localhost:" + localport + "/command/user/create" , command, String.class);
 		

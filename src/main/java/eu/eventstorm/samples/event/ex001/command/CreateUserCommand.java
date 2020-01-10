@@ -13,14 +13,8 @@ public interface CreateUserCommand extends Command {
 
     String getName();
 
-    void setName(String name);
-
     int getAge();
 
-    void setAge(int age);
-
     String getEmail();
-
-    void setEmail(String email);
 
 }
